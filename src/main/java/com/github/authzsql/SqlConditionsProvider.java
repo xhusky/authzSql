@@ -3,12 +3,10 @@ package com.github.authzsql;
 import java.util.List;
 
 /**
- * This guy is lazy, nothing left.
+ * Conditions provider
  *
  * @author Think Wong
  */
-public interface ConditionsProvider<T> {
-
+public interface SqlConditionsProvider<T> {
     List<T> conditions(String column);
-
 }

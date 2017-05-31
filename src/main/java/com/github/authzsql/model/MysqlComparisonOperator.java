@@ -1,22 +1,22 @@
-package com.github.authzsql;
+package com.github.authzsql.model;
 
 import java.util.Arrays;
 
 /**
- * 权限控制SQL where 匹配类型
+ * Where operator for Mysql
  *
  * @author Think wong
  */
-public enum MysqlWhereOperator implements WhereOperator {
+public enum MysqlComparisonOperator implements ComparisonOperator {
 
     EQUAL("=") {
-        public String condition(String fieldValue) {
-            return " = " + quote(fieldValue);
+        public String condition(String columnValue) {
+            return " = " + quote(columnValue);
         }
     },
     IN("IN") {
-        public String condition(String fieldValue) {
-            String[] values = fieldValue.split(",");
+        public String condition(String columnValue) {
+            String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
                 values[i] = quote(values[i]);
             }
@@ -24,18 +24,18 @@ public enum MysqlWhereOperator implements WhereOperator {
         }
     },
     LIKE("LIKE") {
-        public String condition(String fieldValue) {
-            return " LIKE " + quote(fieldValue);
+        public String condition(String columnValue) {
+            return " LIKE " + quote(columnValue);
         }
     },
     NOT_EQUAL("<>") {
-        public String condition(String fieldValue) {
-            return " <> " + quote(fieldValue);
+        public String condition(String columnValue) {
+            return " <> " + quote(columnValue);
         }
     },
     NOT_IN("NOT IN") {
-        public String condition(String fieldValue) {
-            String[] values = fieldValue.split(",");
+        public String condition(String columnValue) {
+            String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
                 values[i] = quote(values[i]);
             }
@@ -43,17 +43,17 @@ public enum MysqlWhereOperator implements WhereOperator {
         }
     },
     NOT_LIKE("NOT LIKE") {
-        public String condition(String fieldValue) {
-            return " NOT LIKE " + quote(fieldValue);
+        public String condition(String columnValue) {
+            return " NOT LIKE " + quote(columnValue);
         }
     },
     ALL("") {
-        public String condition(String fieldValue) {
+        public String condition(String columnValue) {
             return "";
         }
     };
 
-    MysqlWhereOperator(String symbol) {
+    MysqlComparisonOperator(String symbol) {
         this.symbol = symbol;
     }
 
@@ -64,13 +64,12 @@ public enum MysqlWhereOperator implements WhereOperator {
         return symbol;
     }
 
-    @Override
-    public MysqlWhereOperator fromString(String name) {
-        return MysqlWhereOperator.valueOf(name.toUpperCase());
-    }
-
     public String symbol() {
         return symbol;
+    }
+
+    public static MysqlComparisonOperator fromString(String name) {
+        return valueOf(name.toUpperCase());
     }
 
     private static String quote(String str) {

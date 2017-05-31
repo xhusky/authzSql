@@ -1,16 +1,19 @@
 package com.github.authzsql;
 
+import com.github.authzsql.model.MysqlComparisonOperator;
+import com.github.authzsql.model.SqlCondition;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 调用权限 REST API 权限条件
+ * Kmx conditions provider
  *
  * @author Think wong
  */
-public class KmxConditionsProvider implements ConditionsProvider<Condition> {
+public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider<SqlCondition> {
 
     private static final Pattern PATTERN_RESOURCE = Pattern.compile("\"resource\"\\s*:\\s*\"(.*?)\"");
     private static final Pattern PATTERN_RESOURCE_TYPE = Pattern.compile("(.*)/(.*)$");
@@ -45,37 +48,33 @@ public class KmxConditionsProvider implements ConditionsProvider<Condition> {
             "    }\n" +
             "}";
 
-
-
     /**
-     * 根据列名获取权限数据
+     * Extract list of condition by column name.
      *
-     * @param column 列名
-     * @return 权限对象列表
+     * @param column column name
      */
     @Override
-    public List<Condition> conditions(String column) {
+    public List<SqlCondition> conditions(String column) {
 
         Matcher resourceMatcher = PATTERN_RESOURCE.matcher(PERMS);
-        List<Condition> conditions = new ArrayList<>();
+        List<SqlCondition> sqlConditions = new ArrayList<>();
 
         while (resourceMatcher.find()) {
-            Condition condition = extractCondition(resourceMatcher.group(1));
-            if (condition != null) {
-                conditions.add(condition);
+            SqlCondition sqlCondition = extractCondition(resourceMatcher.group(1));
+            if (sqlCondition != null) {
+                sqlConditions.add(sqlCondition);
             }
         }
 
-        return conditions;
+        return sqlConditions;
     }
 
     /**
-     * 抽取单个资源条件
+     * Extract condition from permission resource.
      *
-     * @param resource 资源类型/资源 eg: gw-md4x/windfarm/IN:200141,200142,200143。gw-md4x/windfarm为资源类型
-     *                 IN:200141,200142,200143为资源
+     * @param resource permission resource
      */
-    private static Condition extractCondition(String resource) {
+    private static SqlCondition extractCondition(String resource) {
         final Matcher matcher = PATTERN_RESOURCE_TYPE.matcher(resource);
         if (matcher.find()) {
             return extractCondition(matcher.group(1), matcher.group(2));
@@ -84,31 +83,31 @@ public class KmxConditionsProvider implements ConditionsProvider<Condition> {
     }
 
     /**
-     * 抽取单个资源条件
+     * Extract condition.
      *
-     * @param originalColumn 原始列名（可能包含系统名，比如gw-md4x/windfarm，其中gw-md4x为系统名称，windfarm为列名）
-     * @param originalValue  原始资源 比如 IN:200141,200142,200143 IN为操作类型 200141,200142,200143为具体资源
+     * @param originalColumn original column name
+     * @param originalValue  original column value
      */
-    private static Condition extractCondition(String originalColumn, String originalValue) {
+    private static SqlCondition extractCondition(String originalColumn, String originalValue) {
         final Matcher matcher = PATTERN_OPERATOR_VALUE.matcher(originalValue);
 
-        Condition condition = new Condition();
-        condition.setColumn(extractColumn(originalColumn));
+        SqlCondition sqlCondition = new SqlCondition();
+        sqlCondition.setColumn(extractColumn(originalColumn));
 
         if (matcher.find()) {
-            condition.setWhereOperator(MysqlWhereOperator.valueOf(matcher.group(1)));
-            condition.setValue(matcher.group(2));
-            return condition;
+            sqlCondition.setOperator(MysqlComparisonOperator.fromString(matcher.group(1)));
+            sqlCondition.setValue(matcher.group(2));
+            return sqlCondition;
         }
-        condition.setWhereOperator(MysqlWhereOperator.EQUAL);
-        condition.setValue(originalValue);
-        return condition;
+        sqlCondition.setOperator(MysqlComparisonOperator.EQUAL);
+        sqlCondition.setValue(originalValue);
+        return sqlCondition;
     }
 
     /**
-     * 抽取列名
+     * Extract column name.
      *
-     * @param originalColumn 原始列名（可能包含系统名，比如gw-md4x/windfarm，其中gw-md4x为系统名称，windfarm为列名）
+     * @param originalColumn original column name
      */
     private static String extractColumn(String originalColumn) {
         final Matcher matcher = PATTERN_COLUMN.matcher(originalColumn);
@@ -118,6 +117,5 @@ public class KmxConditionsProvider implements ConditionsProvider<Condition> {
 
         return originalColumn;
     }
-
 
 }

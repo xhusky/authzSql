@@ -1,11 +1,10 @@
-package com.github.authzsql;
+package com.github.authzsql.model;
 
 /**
  * This guy is lazy, nothing left.
  *
  * @author Think Wong
  */
-public interface WhereOperator {
+public interface ComparisonOperator {
     String condition(String value);
-    WhereOperator fromString(String name);
 }

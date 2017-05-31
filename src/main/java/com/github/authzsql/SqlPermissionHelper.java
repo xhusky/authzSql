@@ -1,5 +1,8 @@
 package com.github.authzsql;
 
+import com.github.authzsql.model.SqlCondition;
+import com.github.authzsql.utils.Preconditions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,13 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 权限控制SQL工具类
+ * Helper for permission
  *
  * @author Think wong
  */
-public class PermissionHelper {
+public class SqlPermissionHelper {
 
-    // 权限控制魔字串
     private static final String PLACEHOLDER_MAGIC = "IAmPlaceholder";
     private static final String PLACEHOLDER_ELEMENT = "'" + PLACEHOLDER_MAGIC + "-.*?\'";
     private static final String PLACEHOLDER_COLUMN_EXTRACTOR = "'" + PLACEHOLDER_MAGIC + "-(.*?)'\\s*=\\s*'" + PLACEHOLDER_MAGIC + "-.*?'";
@@ -31,58 +33,60 @@ public class PermissionHelper {
     private static final String CLOSE = " ) ";
 
     private String originalSql;
-    private ConditionsProvider<Condition> conditionsProvider;
+    private SqlConditionsProvider<SqlCondition> sqlConditionsProvider = new Kmx3ASqlConditionsProvider();
 
-    private PermissionHelper() {
+    private SqlPermissionHelper() {
         // constructor disabled
     }
 
     public static class Builder {
-        private PermissionHelper permissionHelper = new PermissionHelper();
+        private SqlPermissionHelper sqlPermissionHelper = new SqlPermissionHelper();
 
         public Builder sql(String sql) {
-            permissionHelper.originalSql = sql;
-            return this;
-        }
-        public Builder provider(ConditionsProvider<Condition> conditionsProvider) {
-            permissionHelper.conditionsProvider = conditionsProvider;
+            Preconditions.checkEmptyString(sql, "You must provide an original sql");
+            sqlPermissionHelper.originalSql = sql;
             return this;
         }
 
-        public PermissionHelper build() {
-            assert permissionHelper.originalSql != null;
-            assert permissionHelper.conditionsProvider != null;
-            return permissionHelper;
+        public Builder provider(SqlConditionsProvider<SqlCondition> sqlConditionsProvider) {
+            Preconditions.checkNotNull(sqlConditionsProvider, "sqlConditionsProvider can't be null");
+            sqlPermissionHelper.sqlConditionsProvider = sqlConditionsProvider;
+            return this;
+        }
+
+        public SqlPermissionHelper build() {
+            checkPreconditions();
+            return sqlPermissionHelper;
+        }
+
+        private void checkPreconditions() {
+            Preconditions.checkEmptyString(sqlPermissionHelper.originalSql, "You must provide an original sql");
         }
     }
 
     /**
-     * 判断是否需要生成权限控制sql
+     * Check whether need authorization
      *
-     * @return 是否需要生成权限控制sql
+     * @return true if the sql contains permission placeholder
      */
-    public static boolean needPermission(String sql) {
+    public static boolean needAuthz(String sql) {
         return PATTERN_PLACEHOLDER.matcher(sql).find();
     }
 
     /**
-     * 生成权限控制sql
-     *
-     * @return 权限控制sql
+     * Generate authorization sql
      */
-    public String generatePermissionSql() {
-        return infillCondition(extractSqlConditionMap());
+    public String generateAuthzSql() {
+        return infillConditionPlainSql(extractConditionPlainSqlMap());
     }
 
     /**
-     * 向占位符填充条件，组成新的sql
-     *
-     * @return 填入条件的sql
+     * Infill condition
      */
-    private String infillCondition(Map<String, String> sqlConditionMap) {
+    private String infillConditionPlainSql(Map<String, String> conditionPlainSqlMap) {
 
         String destinationSql = originalSql;
-        for (Map.Entry<String, String> entry : sqlConditionMap.entrySet()) {
+        for (Map.Entry<String, String> entry : conditionPlainSqlMap.entrySet()) {
             destinationSql = destinationSql.replaceAll(entry.getKey(), entry.getValue());
         }
 
@@ -90,73 +94,69 @@ public class PermissionHelper {
     }
 
     /**
-     * 抽取筛选字段，组成where条件
-     *
-     * @return 组装好的where条件Map key为placeholder, value为实际where条件
+     * Extract sql condition map. key is placeholder, value is where condition
      */
-    private Map<String, String> extractSqlConditionMap() {
+    private Map<String, String> extractConditionPlainSqlMap() {
         final Matcher matcher = PATTERN_PLACEHOLDER_EXTRACTOR.matcher(originalSql);
         Map<String, String> sqlConditionMap = new HashMap<>();
 
         while (matcher.find()) {
             String placeholder = matcher.group(1);
-            sqlConditionMap.put(placeholder, extractSqlCondition(placeholder));
+            sqlConditionMap.put(placeholder, extractConditionPlainSql(placeholder));
         }
 
         return sqlConditionMap;
     }
 
     /**
-     * 从placeholder中抽取筛选字段，组成where条件
-     *
-     * @return 组装好的where条件
+     * Extract sql condition from placeholder
      */
-    private String extractSqlCondition(String placeholder) {
+    private String extractConditionPlainSql(String placeholder) {
         final Matcher matcher = PATTERN_PLACEHOLDER_COLUMN_EXTRACTOR.matcher(placeholder);
         if (matcher.find()) {
             String column = matcher.group(1);
-            List<Condition> conditions = conditionsProvider.conditions(extractColumn(column));
-            List<String> sqlConditions = generateSqlConditions(conditions, column);
-            return generateSqlClause(sqlConditions);
+            List<SqlCondition> conditions = sqlConditionsProvider.conditions(extractColumn(column));
+            List<String> sqlConditions = generateConditionPlainSqlList(conditions, column);
+            return generateConditionSqlClause(sqlConditions);
         }
 
         return placeholder;
     }
 
     /**
-     * 生成 Sql where 条件列表
+     * Generate sql conditions
      */
-    private List<String> generateSqlConditions(List<Condition> conditions, String column) {
+    private List<String> generateConditionPlainSqlList(List<SqlCondition> conditions, String column) {
         List<String> sqlConditions = new ArrayList<>();
 
-        for (Condition condition : conditions) {
-            sqlConditions.add(condition.string(column));
+        for (SqlCondition sqlCondition : conditions) {
+            sqlConditions.add(sqlCondition.string(column));
         }
 
         return sqlConditions;
     }
 
     /**
-     * 组装成where语句
+     * Generate condition sql clause
      */
-    private String generateSqlClause(List<String> sqlConditions) {
-        return generateSqlClause(sqlConditions, OPEN, CLOSE, OR);
+    private String generateConditionSqlClause(List<String> sqlConditions) {
+        return generateConditionSqlClause(sqlConditions, OPEN, CLOSE, OR);
     }
 
     /**
-     * 组装成where语句
+     * Generate condition sql clause
      */
-    private String generateSqlClause(List<String> sqlConditions, String open, String close, String conjunction) {
+    private String generateConditionSqlClause(List<String> sqlConditions, String open, String close, String conjunction) {
 
         StringBuilder builder = new StringBuilder();
         if (!sqlConditions.isEmpty()) {
             builder.append(open);
             for (int i = 0, n = sqlConditions.size(); i < n; i++) {
-                String part = sqlConditions.get(i);
+                String sqlCondition = sqlConditions.get(i);
                 if (i > 0) {
                     builder.append(conjunction);
                 }
-                builder.append(part);
+                builder.append(sqlCondition);
             }
             builder.append(close);
         }
@@ -165,7 +165,7 @@ public class PermissionHelper {
     }
 
     /**
-     * 获取真实列名称，去掉表别名， 比如a.column -> column
+     * Extract column, remove table alias
      */
     private String extractColumn(String column) {
         final Matcher matcher = PATTERN_COLUMN_NAME.matcher(column);

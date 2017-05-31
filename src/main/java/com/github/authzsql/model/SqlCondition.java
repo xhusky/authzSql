@@ -1,13 +1,13 @@
-package com.github.authzsql;
+package com.github.authzsql.model;
 
 /**
- * 条件实体
+ * Sql condition entity
  *
  * @author Think wong
  */
-public class Condition {
+public class SqlCondition {
     private String column;
-    private WhereOperator whereOperator;
+    private ComparisonOperator operator;
     private String value;
 
     public String getColumn() {
@@ -18,12 +18,12 @@ public class Condition {
         this.column = column;
     }
 
-    public WhereOperator getWhereOperator() {
-        return whereOperator;
+    public ComparisonOperator getOperator() {
+        return operator;
     }
 
-    public void setWhereOperator(WhereOperator whereOperator) {
-        this.whereOperator = whereOperator;
+    public void setOperator(ComparisonOperator operator) {
+        this.operator = operator;
     }
 
     public String getValue() {
@@ -36,7 +36,7 @@ public class Condition {
 
     @Override
     public String toString() {
-        return column + whereOperator.condition(value);
+        return column + operator.condition(value);
     }
 
     public String string() {
