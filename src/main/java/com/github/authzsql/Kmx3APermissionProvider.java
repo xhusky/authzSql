@@ -12,7 +12,7 @@ public class Kmx3APermissionProvider {
     private String url;
     private String username;
     private String resourceType;
-    private String operation = "view";
+    private String operation = "VIEW";
     private String effect = "allow";
 
     private Kmx3APermissionProvider() {

@@ -1,4 +1,4 @@
-package com.github.authzsql;
+package com.github.authzsql.cache;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,10 +25,6 @@ public class PermissionCache {
                 }
             });
 
-    private static String handlePermission(String key) {
-        return key;
-    }
-
     public static String get(String key) {
         try {
             return cache.get(key);
@@ -40,4 +36,9 @@ public class PermissionCache {
     public static void invildate(String key) {
         cache.invalidate(key);
     }
+
+    private static String handlePermission(String key) {
+        return key;
+    }
+
 }

@@ -33,7 +33,7 @@ public class Preconditions {
         check(hasText(string), errorMsg);
     }
 
-    public static boolean hasText(String str) {
+    private static boolean hasText(String str) {
         if (str == null || str.isEmpty()) {
             return false;
         }
