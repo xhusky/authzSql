@@ -28,7 +28,7 @@ public enum MysqlComparisonOperator implements ComparisonOperator {
             return " LIKE " + quote(columnValue);
         }
     },
-    NOT_EQUAL("<>") {
+    UNEQUAL("<>") {
         public String condition(String columnValue) {
             return " <> " + quote(columnValue);
         }

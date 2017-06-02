@@ -1,6 +1,6 @@
 package com.github.authzsql;
 
-import com.github.authzsql.model.ResourcePlaceholder;
+import com.github.authzsql.model.SqlPlaceholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,19 +20,17 @@ public class ResourcePlaceholderProvider {
             " a.projectname, a.projectid, a.region, a.assemblycapacity, a.assemblyquantity\n" +
             " FROM gw_basic_windfarm a\n" +
             " WHERE 'K2AUTH/windFarmId/a.windFarmId'='K2AUTH/windFarmId/a.windFarmId'";
-    /**
-     * Extract sql condition map. key is placeholder, value is where condition
-     */
-    private static List<ResourcePlaceholder> resource(String originalSql) {
-        final Matcher matcher = PATTERN_PLACEHOLDER.matcher(originalSql);
-        List<ResourcePlaceholder> placeholders = new ArrayList<>();
-        while (matcher.find()) {
-            ResourcePlaceholder resourcePlaceholder = new ResourcePlaceholder();
-            resourcePlaceholder.setText(matcher.group(0));
-            resourcePlaceholder.setType(matcher.group(1));
-            resourcePlaceholder.setColumn(matcher.group(2));
 
-            placeholders.add(resourcePlaceholder);
+    private static List<SqlPlaceholder> resource(String originalSql) {
+        final Matcher matcher = PATTERN_PLACEHOLDER.matcher(originalSql);
+        List<SqlPlaceholder> placeholders = new ArrayList<>();
+        while (matcher.find()) {
+            SqlPlaceholder sqlPlaceholder = new SqlPlaceholder();
+            sqlPlaceholder.setText(matcher.group(0));
+            sqlPlaceholder.setType(matcher.group(1));
+            sqlPlaceholder.setColumn(matcher.group(2));
+
+            placeholders.add(sqlPlaceholder);
         }
 
         return placeholders;

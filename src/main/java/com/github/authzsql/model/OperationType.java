@@ -6,5 +6,5 @@ package com.github.authzsql.model;
  * @author Think Wong
  */
 public enum OperationType {
-    EDIT, VIEW, DELETE, EXECUTE
+    VIEW, EDIT, DELETE, EXECUTE, CANCEL, DOWNLOAD
 }

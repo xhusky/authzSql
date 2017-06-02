@@ -7,14 +7,48 @@
 
 ------
 - 资源resource 仅返回 LIKE:xx 格式
-- 占位符简化
+- 占位符简化 'K2AUTH/windFarmId/a.windFarmId'<>''
 - IN,LIKE,=  逻辑运算为OR, NOT IN, NOT LIKE, <> 逻辑运算为AND
-- 下载,删除,修改,执行,取消  等操作
-
+- 下载,删除,修改,执行,取消  等操作（关注分页）
+- 单个资源操作的权限验证，比如delete（拦截器）
 - K2AUTH/windFarm/view/a.wfId
 - K2AUTH/windFarm/delete/a.wfId
 
+
+SELECT
+    id,
+    windFarmId,
+    windFarmName,
+    'K2AUTH/OPERATION'
+FROM
+    gw_basic_windfarm
+
+
+SELECT
+    id,
+    windFarmId,
+    windFarmName,
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%') AS download
+FROM
+    gw_basic_windfarm
+
+
+SELECT
+    id,
+    windFarmId,
+    windFarmName,
+    CONCAT(
+        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
+        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
+        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
+    ) AS operation
+FROM
+    gw_basic_windfarm
+    
 -----
 
 - 多字段筛选
+- 多数据类型支持
 - 权限缓存回调

@@ -1,11 +1,11 @@
 package com.github.authzsql.model;
 
 /**
- * This guy is lazy, nothing left.
+ * SQl placeholder entity.
  *
  * @author Think Wong
  */
-public class ResourcePlaceholder {
+public class SqlPlaceholder {
 
     private String text;
     private String type;
@@ -35,12 +35,4 @@ public class ResourcePlaceholder {
         this.column = column;
     }
 
-    @Override
-    public String toString() {
-        return "ResourcePlaceholder{" +
-                "text=\"" + text + '\"' +
-                ", type=\"" + type + '\"' +
-                ", column=\"" + column + '\"' +
-                '}';
-    }
 }

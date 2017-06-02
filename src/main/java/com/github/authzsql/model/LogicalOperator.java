@@ -5,6 +5,6 @@ package com.github.authzsql.model;
  *
  * @author Think Wong
  */
-public enum EffectType {
-    ALLOW, DENY
+public enum LogicalOperator {
+    AND, OR //, NOT, XOR
 }
