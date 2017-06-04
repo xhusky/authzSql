@@ -7,7 +7,7 @@ import java.util.Arrays;
  *
  * @author Think wong
  */
-public enum MysqlComparisonOperator {
+public enum ComparisonOperator {
 
     EQUAL {
         public String condition(String columnValue) {
@@ -53,7 +53,7 @@ public enum MysqlComparisonOperator {
         }
     };
 
-    public static MysqlComparisonOperator fromString(String name) {
+    public static ComparisonOperator fromString(String name) {
         return valueOf(name.toUpperCase());
     }
 
