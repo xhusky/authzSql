@@ -7,8 +7,8 @@ package com.github.authzsql.model;
  */
 public class Permission {
     private String resourceType;
+    private String resourceInfo;
     private String operation;
-    private String resource;
     private String effect;
 
     public String getResourceType() {
@@ -19,20 +19,20 @@ public class Permission {
         this.resourceType = resourceType;
     }
 
+    public String getResourceInfo() {
+        return resourceInfo;
+    }
+
+    public void setResourceInfo(String resourceInfo) {
+        this.resourceInfo = resourceInfo;
+    }
+
     public String getOperation() {
         return operation;
     }
 
     public void setOperation(String operation) {
         this.operation = operation;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    public void setResource(String resource) {
-        this.resource = resource;
     }
 
     public String getEffect() {
@@ -47,10 +47,9 @@ public class Permission {
     public String toString() {
         return "Permission{" +
                 "resourceType='" + resourceType + '\'' +
+                ", resourceInfo='" + resourceInfo + '\'' +
                 ", operation='" + operation + '\'' +
-                ", resource='" + resource + '\'' +
                 ", effect='" + effect + '\'' +
                 '}';
     }
-
 }

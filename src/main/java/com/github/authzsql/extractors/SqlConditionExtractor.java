@@ -7,4 +7,7 @@ package com.github.authzsql.extractors;
  */
 public class SqlConditionExtractor {
 
+    public static void extract(String resourceType) {
+
+    }
 }

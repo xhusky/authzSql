@@ -8,7 +8,7 @@ package com.github.authzsql.model;
 public class SqlPlaceholder {
 
     private String text;
-    private String type;
+    private String resourceType;
     private String column;
 
     public String getText() {
@@ -19,12 +19,12 @@ public class SqlPlaceholder {
         this.text = text;
     }
 
-    public String getType() {
-        return type;
+    public String getResourceType() {
+        return resourceType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
     public String getColumn() {
@@ -34,5 +34,4 @@ public class SqlPlaceholder {
     public void setColumn(String column) {
         this.column = column;
     }
-
 }

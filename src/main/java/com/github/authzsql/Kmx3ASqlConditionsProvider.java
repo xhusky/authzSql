@@ -1,6 +1,6 @@
 package com.github.authzsql;
 
-import com.github.authzsql.model.MysqlComparisonOperator;
+import com.github.authzsql.model.ComparisonOperator;
 import com.github.authzsql.model.SqlCondition;
 
 import java.util.ArrayList;
@@ -95,11 +95,11 @@ public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider<SqlCond
         sqlCondition.setColumn(extractColumn(originalColumn));
 
         if (matcher.find()) {
-            sqlCondition.setOperator(MysqlComparisonOperator.fromString(matcher.group(1)));
+            sqlCondition.setOperator(ComparisonOperator.fromString(matcher.group(1)));
             sqlCondition.setValue(matcher.group(2));
             return sqlCondition;
         }
-        sqlCondition.setOperator(MysqlComparisonOperator.EQUAL);
+        sqlCondition.setOperator(ComparisonOperator.EQUAL);
         sqlCondition.setValue(originalValue);
         return sqlCondition;
     }
