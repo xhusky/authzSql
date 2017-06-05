@@ -30,7 +30,7 @@
                     "operation":"VIEW"
                 },
                 {
-                    "resource":"UNEQUAL:200145",
+                    "resource":NOT_EQUAL,
                     "operation":"VIEW"
                 },
                 {

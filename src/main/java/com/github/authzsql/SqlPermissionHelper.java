@@ -1,6 +1,11 @@
 package com.github.authzsql;
 
+import com.github.authzsql.model.Constants;
+import com.github.authzsql.model.LogicalOperator;
+import com.github.authzsql.model.OperationType;
 import com.github.authzsql.model.SqlCondition;
+import com.github.authzsql.model.SqlConditionPreparation;
+import com.github.authzsql.model.converter.OperatorConverter;
 import com.github.authzsql.utils.Preconditions;
 
 import java.util.ArrayList;
@@ -17,18 +22,8 @@ import java.util.regex.Pattern;
  */
 public class SqlPermissionHelper {
 
-    private static final String PLACEHOLDER_MAGIC = "IAmPlaceholder";
-    private static final String PLACEHOLDER_ELEMENT = "'" + PLACEHOLDER_MAGIC + "-.*?\'";
-    private static final String PLACEHOLDER_COLUMN_EXTRACTOR = "'" + PLACEHOLDER_MAGIC + "-(.*?)'\\s*=\\s*'" + PLACEHOLDER_MAGIC + "-.*?'";
-    private static final String PLACEHOLDER = PLACEHOLDER_ELEMENT + "\\s*=\\s*" + PLACEHOLDER_ELEMENT;
-
-    private static final Pattern PATTERN_PLACEHOLDER_COLUMN_EXTRACTOR = Pattern.compile(PLACEHOLDER_COLUMN_EXTRACTOR);
-    private static final Pattern PATTERN_PLACEHOLDER = Pattern.compile(PLACEHOLDER);
-    private static final Pattern PATTERN_PLACEHOLDER_EXTRACTOR = Pattern.compile("(" + PLACEHOLDER + ")");
-
-    private static final Pattern PATTERN_COLUMN_NAME = Pattern.compile(".*\\.(.*)$");
-
-    private static final String OR = " OR ";
+    // eg, 'K2AUTH/windfarm/a.windFarmId'<>''
+    private static final Pattern PATTERN_CONDITION_PLACEHOLDER = Pattern.compile("'K2AUTH/(.*?)/(.*?)'\\s*<>\\s*'\\s*'");
     private static final String OPEN = " ( ";
     private static final String CLOSE = " ) ";
 
@@ -69,14 +64,14 @@ public class SqlPermissionHelper {
      *
      * @return true if the sql contains permission placeholder
      */
-    public static boolean needAuthz(String sql) {
-        return PATTERN_PLACEHOLDER.matcher(sql).find();
+    public static boolean needAuthorization(String sql) {
+        return PATTERN_CONDITION_PLACEHOLDER.matcher(sql).find();
     }
 
     /**
      * Generate authorization sql
      */
-    public String generateAuthzSql() {
+    public String generateAuthorizationSql() {
         return infillConditionPlainSql(extractConditionPlainSqlMap());
     }
 
@@ -97,11 +92,11 @@ public class SqlPermissionHelper {
      * Extract sql condition map. key is placeholder, value is where condition
      */
     private Map<String, String> extractConditionPlainSqlMap() {
-        final Matcher matcher = PATTERN_PLACEHOLDER_EXTRACTOR.matcher(originalSql);
+        final Matcher matcher = PATTERN_CONDITION_PLACEHOLDER.matcher(originalSql);
         Map<String, String> sqlConditionMap = new HashMap<>();
 
         while (matcher.find()) {
-            String placeholder = matcher.group(1);
+            String placeholder = matcher.group(0);
             sqlConditionMap.put(placeholder, extractConditionPlainSql(placeholder));
         }
 
@@ -112,12 +107,14 @@ public class SqlPermissionHelper {
      * Extract sql condition from placeholder
      */
     private String extractConditionPlainSql(String placeholder) {
-        final Matcher matcher = PATTERN_PLACEHOLDER_COLUMN_EXTRACTOR.matcher(placeholder);
+        final Matcher matcher = PATTERN_CONDITION_PLACEHOLDER.matcher(placeholder);
         if (matcher.find()) {
-            String column = matcher.group(1);
-            List<SqlCondition> conditions = sqlConditionsProvider.conditions(extractColumn(column));
-            List<String> sqlConditions = generateConditionPlainSqlList(conditions, column);
-            return generateConditionSqlClause(sqlConditions);
+            String resourceType = matcher.group(1);
+            String column = matcher.group(2);
+            List<SqlCondition> conditions = sqlConditionsProvider.conditions(resourceType, OperationType.VIEW.name(), column);
+
+            List<SqlConditionPreparation> sqlConditionPreparations = generateConditionPlainSqlList(conditions);
+            return generateConditionSqlClause(sqlConditionPreparations);
         }
 
         return placeholder;
@@ -126,31 +123,60 @@ public class SqlPermissionHelper {
     /**
      * Generate sql conditions
      */
-    private List<String> generateConditionPlainSqlList(List<SqlCondition> conditions, String column) {
-        List<String> sqlConditions = new ArrayList<>();
+    private List<SqlConditionPreparation> generateConditionPlainSqlList(List<SqlCondition> sqlConditions) {
+        List<SqlConditionPreparation> sqlConditionPreparations = new ArrayList<>();
 
-        for (SqlCondition sqlCondition : conditions) {
-            sqlConditions.add(sqlCondition.string(column));
+        for (SqlCondition sqlCondition : sqlConditions) {
+            SqlConditionPreparation sqlConditionPreparation = new SqlConditionPreparation();
+            sqlConditionPreparation.setSqlCondition(sqlCondition.string());
+            sqlConditionPreparation.setLogicalOperator(OperatorConverter.ComparisonToLogical(sqlCondition.getOperator()));
+
+            sqlConditionPreparations.add(sqlConditionPreparation);
         }
 
-        return sqlConditions;
+        return sqlConditionPreparations;
     }
 
     /**
      * Generate condition sql clause
      */
-    private String generateConditionSqlClause(List<String> sqlConditions) {
-        return generateConditionSqlClause(sqlConditions, OPEN, CLOSE, OR);
+    private String generateConditionSqlClause(List<SqlConditionPreparation> sqlConditionPreparations) {
+
+        if (sqlConditionPreparations == null || sqlConditionPreparations.isEmpty()) {
+            return Constants.SQL_CONDITION_FALSE;
+        }
+
+        Map<LogicalOperator, List<String>> logicalOperatorListMap = new HashMap<>();
+
+        for (SqlConditionPreparation sqlConditionPreparation : sqlConditionPreparations) {
+            LogicalOperator logicalOperator = sqlConditionPreparation.getLogicalOperator();
+            logicalOperatorListMap.putIfAbsent(logicalOperator, new ArrayList<>());
+            logicalOperatorListMap.get(logicalOperator).add(sqlConditionPreparation.getSqlCondition());
+        }
+
+        StringBuilder sqlClause = new StringBuilder();
+
+        int i = 0;
+        for (Map.Entry<LogicalOperator, List<String>> entry : logicalOperatorListMap.entrySet()) {
+            if (i > 0) {
+                sqlClause.append("\n");
+                sqlClause.append(" AND ");
+            }
+            i++;
+            sqlClause.append(generateConditionSqlClause(entry.getValue(), entry.getKey().name()));
+        }
+        return sqlClause.toString();
     }
 
     /**
      * Generate condition sql clause
      */
-    private String generateConditionSqlClause(List<String> sqlConditions, String open, String close, String conjunction) {
+    private String generateConditionSqlClause(List<String> sqlConditions, String conjunction) {
 
+        conjunction = wrap(conjunction);
         StringBuilder builder = new StringBuilder();
         if (!sqlConditions.isEmpty()) {
-            builder.append(open);
+            builder.append(OPEN);
             for (int i = 0, n = sqlConditions.size(); i < n; i++) {
                 String sqlCondition = sqlConditions.get(i);
                 if (i > 0) {
@@ -158,21 +184,13 @@ public class SqlPermissionHelper {
                 }
                 builder.append(sqlCondition);
             }
-            builder.append(close);
+            builder.append(CLOSE);
         }
 
         return builder.toString();
     }
 
-    /**
-     * Extract column, remove table alias
-     */
-    private String extractColumn(String column) {
-        final Matcher matcher = PATTERN_COLUMN_NAME.matcher(column);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        return column;
+    private String wrap(String str) {
+        return (str != null ? " " + str + " " : null);
     }
 }

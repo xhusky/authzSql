@@ -10,46 +10,46 @@ import java.util.Arrays;
 public enum ComparisonOperator {
 
     EQUAL {
-        public String condition(String columnValue) {
-            return " = " + quote(columnValue);
+        public String condition(String column, String columnValue) {
+            return column + " = " + quote(columnValue);
         }
     },
     IN {
-        public String condition(String columnValue) {
+        public String condition(String column, String columnValue) {
             String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
                 values[i] = quote(values[i]);
             }
-            return " IN (" + String.join(",", Arrays.asList(values)) + ")";
+            return column + " IN (" + String.join(",", Arrays.asList(values)) + ")";
         }
     },
     LIKE {
-        public String condition(String columnValue) {
-            return " LIKE " + quote(columnValue);
+        public String condition(String column, String columnValue) {
+            return column + " LIKE " + quote(columnValue);
         }
     },
-    UNEQUAL {
-        public String condition(String columnValue) {
-            return " <> " + quote(columnValue);
+    NOT_EQUAL {
+        public String condition(String column, String columnValue) {
+            return column + " <> " + quote(columnValue);
         }
     },
     NOT_IN {
-        public String condition(String columnValue) {
+        public String condition(String column, String columnValue) {
             String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
                 values[i] = quote(values[i]);
             }
-            return " NOT IN (" + String.join(",", Arrays.asList(values)) + ")";
+            return column + " NOT IN (" + String.join(",", Arrays.asList(values)) + ")";
         }
     },
     NOT_LIKE {
-        public String condition(String columnValue) {
-            return " NOT LIKE " + quote(columnValue);
+        public String condition(String column, String columnValue) {
+            return column + " NOT LIKE " + quote(columnValue);
         }
     },
     ALL {
-        public String condition(String columnValue) {
-            return "";
+        public String condition(String column, String columnValue) {
+            return Constants.SQL_CONDITION_TRUE;
         }
     };
 
@@ -61,5 +61,5 @@ public enum ComparisonOperator {
         return (str != null ? "'" + str + "'" : null);
     }
 
-    public abstract String condition(String value);
+    public abstract String condition(String column, String value);
 }

@@ -8,5 +8,7 @@ import java.util.List;
  * @author Think Wong
  */
 public interface SqlConditionsProvider<T> {
-    List<T> conditions(String column);
+    List<T> conditions(String resourceType, String operation);
+
+    List<T> conditions(String resourceType, String operation, String column);
 }

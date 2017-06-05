@@ -15,21 +15,27 @@
 - K2AUTH/windFarm/delete/a.wfId
 
 
+    VIEW, EDIT, DELETE, EXECUTE, CANCEL, DOWNLOAD
+
+
 SELECT
     id,
     windFarmId,
     windFarmName,
-    'K2AUTH/OPERATION'
+    'K2AUTH/EDIT/windFarmId' AS "edit",
+    'K2AUTH/DELETE/windFarmId' AS "delete",
+    'K2AUTH/EXECUTE/windFarmId' AS "execute",
+    'K2AUTH/CANCEL/windFarmId' AS "cancel",
+    'K2AUTH/DOWNLOAD/windFarmId' AS "download"
 FROM
     gw_basic_windfarm
 
-
 SELECT
     id,
     windFarmId,
     windFarmName,
-    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
-    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
     (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%') AS download
 FROM
     gw_basic_windfarm
@@ -52,3 +58,8 @@ FROM
 - 多字段筛选
 - 多数据类型支持
 - 权限缓存回调
+
+- 查询权限无结果时 处理
+- 所有权限时 处理
+
+- plugin 

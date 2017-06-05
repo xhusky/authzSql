@@ -1,6 +1,9 @@
 package com.github.authzsql;
 
+import com.github.authzsql.cache.PermissionCache;
 import com.github.authzsql.model.ComparisonOperator;
+import com.github.authzsql.model.Constants;
+import com.github.authzsql.model.Permission;
 import com.github.authzsql.model.SqlCondition;
 
 import java.util.ArrayList;
@@ -15,107 +18,63 @@ import java.util.regex.Pattern;
  */
 public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider<SqlCondition> {
 
-    private static final Pattern PATTERN_RESOURCE = Pattern.compile("\"resource\"\\s*:\\s*\"(.*?)\"");
-    private static final Pattern PATTERN_RESOURCE_TYPE = Pattern.compile("(.*)/(.*)$");
-    private static final Pattern PATTERN_COLUMN = Pattern.compile(".*/(.*)$");
+    // eg, LIKE:3102%
     private static final Pattern PATTERN_OPERATOR_VALUE = Pattern.compile("(.*?):(.*)$");
 
-    private static final String PERMS = "{\n" +
-            "    \"code\":0,\n" +
-            "    \"message\":\"\",\n" +
-            "    \"body\":{\n" +
-            "        \"user\":{\n" +
-            "            \"id\":\"1\",\n" +
-            "            \"name\":\"abc\",\n" +
-            "            \"permissions\":[\n" +
-            "                {\n" +
-            "                    \"resource\":\"gw-md4x/windfarm/LIKE:20014%\",\n" +
-            "                    \"operation\":\"VIEW\",\n" +
-            "                    \"effect\":\"allow\"\n" +
-            "                },\n" +
-            "                {\n" +
-            "                    \"resource\":\"gw-md4x/windfarm/IN:200141,200142,200143\",\n" +
-            "                    \"operation\":\"VIEW\",\n" +
-            "                    \"effect\":\"allow\"\n" +
-            "                },\n" +
-            "                {\n" +
-            "                    \"resource\":\"gw-md4x/windfarm/200146\",\n" +
-            "                    \"operation\":\"VIEW\",\n" +
-            "                    \"effect\":\"allow\"\n" +
-            "                }\n" +
-            "            ]\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
-
     /**
-     * Extract list of condition by column name.
+     * Extract list of condition by resource type and operation type.
      *
-     * @param column column name
+     * @param resourceType resource type
+     * @param operation    operation type
      */
     @Override
-    public List<SqlCondition> conditions(String column) {
-
-        Matcher resourceMatcher = PATTERN_RESOURCE.matcher(PERMS);
-        List<SqlCondition> sqlConditions = new ArrayList<>();
-
-        while (resourceMatcher.find()) {
-            SqlCondition sqlCondition = extractCondition(resourceMatcher.group(1));
-            if (sqlCondition != null) {
-                sqlConditions.add(sqlCondition);
-            }
-        }
-
-        return sqlConditions;
+    public List<SqlCondition> conditions(String resourceType, String operation) {
+        return conditions(resourceType, operation, null);
     }
 
     /**
-     * Extract condition from permission resource.
+     * Extract list of condition by resource type and operation type.
      *
-     * @param resource permission resource
+     * @param resourceType resource type
+     * @param operation    operation type
+     * @param column       column name
      */
-    private static SqlCondition extractCondition(String resource) {
-        final Matcher matcher = PATTERN_RESOURCE_TYPE.matcher(resource);
-        if (matcher.find()) {
-            return extractCondition(matcher.group(1), matcher.group(2));
+    @Override
+    public List<SqlCondition> conditions(String resourceType, String operation, String column) {
+        List<Permission> permissions = PermissionCache.permissions(resourceType, operation);
+        List<SqlCondition> sqlConditions = new ArrayList<>();
+
+        for (Permission permission : permissions) {
+            sqlConditions.add(extractCondition(permission.getResourceInfo(), column));
         }
-        return null;
+        return sqlConditions;
     }
 
     /**
      * Extract condition.
      *
-     * @param originalColumn original column name
-     * @param originalValue  original column value
+     * @param resourceInfo resource info
+     * @param column       column name
      */
-    private static SqlCondition extractCondition(String originalColumn, String originalValue) {
-        final Matcher matcher = PATTERN_OPERATOR_VALUE.matcher(originalValue);
+    private SqlCondition extractCondition(String resourceInfo, String column) {
+        final Matcher matcher = PATTERN_OPERATOR_VALUE.matcher(resourceInfo);
 
         SqlCondition sqlCondition = new SqlCondition();
-        sqlCondition.setColumn(extractColumn(originalColumn));
+        sqlCondition.setColumn(column);
 
         if (matcher.find()) {
             sqlCondition.setOperator(ComparisonOperator.fromString(matcher.group(1)));
             sqlCondition.setValue(matcher.group(2));
             return sqlCondition;
         }
-        sqlCondition.setOperator(ComparisonOperator.EQUAL);
-        sqlCondition.setValue(originalValue);
-        return sqlCondition;
-    }
-
-    /**
-     * Extract column name.
-     *
-     * @param originalColumn original column name
-     */
-    private static String extractColumn(String originalColumn) {
-        final Matcher matcher = PATTERN_COLUMN.matcher(originalColumn);
-        if (matcher.find()) {
-            return matcher.group(1);
+        if (Constants.PERMISSION_ALL_VALUE.equals(resourceInfo)) {
+            sqlCondition.setOperator(ComparisonOperator.ALL);
+            sqlCondition.setValue(resourceInfo);
+        } else {
+            sqlCondition.setOperator(ComparisonOperator.EQUAL);
+            sqlCondition.setValue(resourceInfo);
         }
-
-        return originalColumn;
+        return sqlCondition;
     }
 
 }

@@ -36,7 +36,7 @@ public class SqlCondition {
 
     @Override
     public String toString() {
-        return column + operator.condition(value);
+        return operator.condition(column, value);
     }
 
     public String string() {
