@@ -1,13 +1,16 @@
-package com.github.authzsql; 
+package com.github.authzsql;
+
+import com.github.authzsql.provider.PermissionsProvider;
+import com.github.authzsql.provider.SamplePermissionProvider;
 
 import org.junit.Test;
 
 
-/** 
-* SqlPermissionService Tester. 
-* 
-* @author Think Wong
-*/ 
+/**
+ * SqlPermissionService Tester.
+ *
+ * @author Think Wong
+ */
 public class SqlPermissionServiceTest {
 
     private static final String ORIGINAL_SQL = "SELECT\n" +
@@ -42,24 +45,36 @@ public class SqlPermissionServiceTest {
             "FROM\n" +
             "    gw_basic_windfarm a\n" +
             "WHERE 'K2AUTH/windfarm/VIEW/a.windFarmId'=0";
-    /** 
-    * 
-    * Method: transformSql() 
-    * 
-    */ 
+
+    /**
+     * Method: transformSql()
+     */
     @Test
-    public void testTransformSql() throws Exception { 
-        String sql = new SqlPermissionService.Builder().sql(ORIGINAL_SQL).build().transformSql();
+    public void testTransformSql() throws Exception {
+        PermissionsProvider permissionsProvider = new SamplePermissionProvider();
+        String sql = new SqlPermissionService.Builder()
+                .sql(ORIGINAL_SQL)
+                .permissionsProvider(permissionsProvider)
+                .build()
+                .transformSql();
         System.out.println(sql);
 
         System.out.println("-------------------------------------------------------------------");
 
-        String sql2 = new SqlPermissionService.Builder().sql(ORIGINAL_SQL2).build().transformSql();
+        String sql2 = new SqlPermissionService.Builder()
+                .sql(ORIGINAL_SQL2)
+                .permissionsProvider(permissionsProvider)
+                .build()
+                .transformSql();
         System.out.println(sql2);
 
         System.out.println("-------------------------------------------------------------------");
 
-        String sql3 = new SqlPermissionService.Builder().sql(ORIGINAL_SQL3).build().transformSql();
+        String sql3 = new SqlPermissionService.Builder()
+                .sql(ORIGINAL_SQL3)
+                .permissionsProvider(permissionsProvider)
+                .build()
+                .transformSql();
         System.out.println(sql3);
     }
 

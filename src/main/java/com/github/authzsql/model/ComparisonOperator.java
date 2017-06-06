@@ -5,7 +5,7 @@ import com.github.authzsql.utils.StringWrapper;
 import java.util.Arrays;
 
 /**
- * Where operator for Mysql
+ * Comparison operator
  *
  * @author Think wong
  */

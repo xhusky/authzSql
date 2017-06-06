@@ -1,7 +1,7 @@
 package com.github.authzsql.model;
 
 /**
- * This guy is lazy, nothing left.
+ * Logical operator.
  *
  * @author Think Wong
  */

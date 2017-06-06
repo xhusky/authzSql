@@ -1,10 +1,9 @@
 package com.github.authzsql.plugins;
 
-import com.github.authzsql.provider.SqlConditionsProvider;
-import com.github.authzsql.utils.SqlPermissionHelper;
-import com.github.authzsql.cache.PermissionCache;
 import com.github.authzsql.model.Constants;
 import com.github.authzsql.model.SqlCondition;
+import com.github.authzsql.provider.SqlConditionsProvider;
+import com.github.authzsql.utils.SqlPermissionHelper;
 import com.github.authzsql.utils.StringWrapper;
 
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This guy is lazy, nothing left.
+ * Sql operation permission plugin.
  *
  * @author Think Wong
  */
@@ -25,9 +24,9 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
     private static final Pattern PATTERN_OPERATION_PLACEHOLDER = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'");
 
     private String originalSql;
-    private SqlConditionsProvider<SqlCondition> sqlConditionsProvider;
+    private SqlConditionsProvider sqlConditionsProvider;
 
-    public SqlOperationPermissionPlugin(SqlConditionsProvider<SqlCondition> sqlConditionsProvider) {
+    public SqlOperationPermissionPlugin(SqlConditionsProvider sqlConditionsProvider) {
         this.sqlConditionsProvider = sqlConditionsProvider;
     }
 
@@ -89,7 +88,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
         Set<String> operationSet = new HashSet<>();
 
         if ("ALL".equals(operationType)) {
-            operationSet = PermissionCache.operations(resourceType);
+            operationSet = sqlConditionsProvider.operations(resourceType);
         } else {
             operationSet.clear();
             operationSet.add(operationType);
@@ -115,7 +114,5 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
         }
 
         return sqlClause.toString();
-
     }
-
 }

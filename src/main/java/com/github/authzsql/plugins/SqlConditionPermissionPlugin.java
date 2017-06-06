@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Helper for permission
+ * Sql condition permission plugin
  *
  * @author Think wong
  */
@@ -20,9 +20,9 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
     private static final Pattern PATTERN_CONDITION_PLACEHOLDER = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'\\s*=\\s*0");
 
     private String originalSql;
-    private SqlConditionsProvider<SqlCondition> sqlConditionsProvider;
+    private SqlConditionsProvider sqlConditionsProvider;
 
-    public SqlConditionPermissionPlugin(SqlConditionsProvider<SqlCondition> sqlConditionsProvider) {
+    public SqlConditionPermissionPlugin(SqlConditionsProvider sqlConditionsProvider) {
         this.sqlConditionsProvider = sqlConditionsProvider;
     }
 
@@ -34,22 +34,6 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
     @Override
     public String transformSql(String originalSql) {
         this.originalSql = originalSql;
-        return infillConditionPlainSql(extractConditionPlainSqlMap());
-    }
-
-    /**
-     * Check whether need authorization
-     *
-     * @return true if the sql contains permission placeholder
-     */
-    public static boolean needAuthorization(String sql) {
-        return PATTERN_CONDITION_PLACEHOLDER.matcher(sql).find();
-    }
-
-    /**
-     * Generate authorization sql
-     */
-    public String generateAuthorizationSql() {
         return infillConditionPlainSql(extractConditionPlainSqlMap());
     }
 

@@ -1,13 +1,15 @@
 package com.github.authzsql.provider;
 
-import com.github.authzsql.cache.PermissionCache;
+
 import com.github.authzsql.model.ComparisonOperator;
 import com.github.authzsql.model.Constants;
 import com.github.authzsql.model.Permission;
 import com.github.authzsql.model.SqlCondition;
+import com.github.authzsql.utils.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,27 +18,31 @@ import java.util.regex.Pattern;
  *
  * @author Think wong
  */
-public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider<SqlCondition> {
+public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider {
 
     // eg, LIKE:3102%
     private static final Pattern PATTERN_OPERATOR_VALUE = Pattern.compile("(.*?):(.*)$");
+    private PermissionsProvider permissionsProvider;
 
-    /**
-     * Extract list of condition by resource type and operation type.
-     *
-     * @param resourceType resource type
-     * @param operation    operation type
-     * @param column       column name
-     */
+    public Kmx3ASqlConditionsProvider(PermissionsProvider permissionsProvider) {
+        Preconditions.checkNotNull(permissionsProvider, "permissionsProvider can't be null");
+        this.permissionsProvider = permissionsProvider;
+    }
+
     @Override
     public List<SqlCondition> conditions(String resourceType, String operation, String column) {
-        List<Permission> permissions = PermissionCache.permissions(resourceType, operation);
+        List<Permission> permissions = permissionsProvider.permissions(resourceType, operation);
         List<SqlCondition> sqlConditions = new ArrayList<>();
 
         for (Permission permission : permissions) {
             sqlConditions.add(extractCondition(permission.getResourceInfo(), column));
         }
         return sqlConditions;
+    }
+
+    @Override
+    public Set<String> operations(String resourceType) {
+        return permissionsProvider.operations(resourceType);
     }
 
     /**

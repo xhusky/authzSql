@@ -6,10 +6,19 @@ package com.github.authzsql.model;
  * @author Think Wong
  */
 public class Permission {
+    private String id;
     private String resourceType;
     private String resourceInfo;
     private String operation;
     private String effect;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getResourceType() {
         return resourceType;
@@ -46,7 +55,8 @@ public class Permission {
     @Override
     public String toString() {
         return "Permission{" +
-                "resourceType='" + resourceType + '\'' +
+                "id='" + id + '\'' +
+                ", resourceType='" + resourceType + '\'' +
                 ", resourceInfo='" + resourceInfo + '\'' +
                 ", operation='" + operation + '\'' +
                 ", effect='" + effect + '\'' +

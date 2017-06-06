@@ -15,6 +15,12 @@
 - K2AUTH/windFarm/delete/a.wfId
 
 
+- 权限数据提供者 （获取用户权限串）
+- 权限数据转换及存储 （将用户权限串转换为特定格式存储）
+- 解析原始SQL （解析原始SQL， 提取需要替换的信息）
+- 转化原始SQL （从权限数据中解析出SQL条件，替换原始SQL中的占位符）
+- 操作解析（部分情况才会使用，比如风场列表需要，但是风场下拉列表就不需要）
+
 // VIEW, EDIT, DELETE, EXECUTE, CANCEL, DOWNLOAD
 
 ```sql 

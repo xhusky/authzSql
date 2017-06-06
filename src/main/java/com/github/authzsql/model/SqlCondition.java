@@ -50,6 +50,9 @@ public class SqlCondition {
         return string();
     }
 
+    /**
+     * Get logical operator by comparison operator.
+     */
     public LogicalOperator getLogicalOperator() {
         return OperatorConverter.ComparisonToLogical(operator);
     }

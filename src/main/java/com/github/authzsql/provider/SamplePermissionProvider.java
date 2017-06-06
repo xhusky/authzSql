@@ -1,12 +1,7 @@
-package com.github.authzsql.cache;
+package com.github.authzsql.provider;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import com.github.authzsql.utils.SqlPermissionHelper;
-import com.github.authzsql.exception.CacheException;
 import com.github.authzsql.model.Permission;
+import com.github.authzsql.utils.SqlPermissionHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,27 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This guy is lazy, nothing left.
  *
  * @author Think Wong
  */
-public class PermissionCache {
+public class SamplePermissionProvider implements PermissionsProvider {
 
-    // TODO 登录获取 登出清空
-    private static final String USERNAME = "k2data";
     private static Map<String, Map<String, List<Permission>>> resourceMap;
-    private static LoadingCache<String, Map<String, Map<String, List<Permission>>>> cache =
-            CacheBuilder.newBuilder()
-                    .maximumSize(1000)
-                    .build(new CacheLoader<String, Map<String, Map<String, List<Permission>>>>() {
-                        @Override
-                        public Map<String, Map<String, List<Permission>>> load(String key) throws Exception {
-                            return handlePermission(key);
-                        }
-                    });
 
     static {
         List<Permission> permissions = new ArrayList<>();
@@ -79,41 +62,28 @@ public class PermissionCache {
         }
     }
 
-    public static Map<String, Map<String, List<Permission>>> get(String key) {
-        try {
-            return cache.get(key);
-        } catch (ExecutionException ex) {
-            throw new CacheException(ex);
-        }
-    }
 
-    public static void invildate(String key) {
-        cache.invalidate(key);
-    }
-
-    private static Map<String, Map<String, List<Permission>>> handlePermission(String key) {
-        return resourceMap;
-    }
-
-    public static List<Permission> permissions(String resourceType, String operation) {
+    @Override
+    public Set<String> operations(String resourceType) {
         resourceType = SqlPermissionHelper.fillResourceType(resourceType);
-        Map<String, Map<String, List<Permission>>> permissionMap = get(USERNAME);
+
+        Map<String, List<Permission>> operationPermissionMap = resourceMap.get(resourceType);
+        if (operationPermissionMap != null) {
+            return operationPermissionMap.keySet();
+        }
+
+        return Collections.emptySet();
+    }
+
+    @Override
+    public List<Permission> permissions(String resourceType, String operation) {
+        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
+        Map<String, Map<String, List<Permission>>> permissionMap = resourceMap;
         if (permissionMap != null && permissionMap.get(resourceType) != null
                 && permissionMap.get(resourceType).get(operation) != null) {
             return permissionMap.get(resourceType).get(operation);
         }
 
         return Collections.emptyList();
-    }
-
-    public static Set<String> operations(String resourceType) {
-        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
-
-        Map<String, List<Permission>> operationPermissionMap = get(USERNAME).get(resourceType);
-        if(operationPermissionMap != null) {
-            return operationPermissionMap.keySet();
-        }
-
-        return Collections.emptySet();
     }
 }
