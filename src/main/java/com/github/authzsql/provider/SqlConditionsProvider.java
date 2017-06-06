@@ -1,4 +1,4 @@
-package com.github.authzsql;
+package com.github.authzsql.provider;
 
 import java.util.List;
 
@@ -8,7 +8,5 @@ import java.util.List;
  * @author Think Wong
  */
 public interface SqlConditionsProvider<T> {
-    List<T> conditions(String resourceType, String operation);
-
     List<T> conditions(String resourceType, String operation, String column);
 }

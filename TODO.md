@@ -15,44 +15,44 @@
 - K2AUTH/windFarm/delete/a.wfId
 
 
-    VIEW, EDIT, DELETE, EXECUTE, CANCEL, DOWNLOAD
+// VIEW, EDIT, DELETE, EXECUTE, CANCEL, DOWNLOAD
 
-
+```sql 
 SELECT
     id,
     windFarmId,
     windFarmName,
-    'K2AUTH/EDIT/windFarmId' AS "edit",
-    'K2AUTH/DELETE/windFarmId' AS "delete",
-    'K2AUTH/EXECUTE/windFarmId' AS "execute",
-    'K2AUTH/CANCEL/windFarmId' AS "cancel",
-    'K2AUTH/DOWNLOAD/windFarmId' AS "download"
+    'K2AUTH/windFarm/ALL/windFarmId'
+ 
 FROM
     gw_basic_windfarm
+WHERE 'K2AUTH/windFarm/VIEW/windFarmId'=0
+
 
 SELECT
     id,
     windFarmId,
     windFarmName,
-    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
-    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
+    'K2AUTH/windFarm/ALL/windFarmId',
+    'K2AUTH/windFarm/EDIT/windFarmId',
+    'K2AUTH/windFarm/DELETE/windFarmId'
+ 
+FROM
+    gw_basic_windfarm
+WHERE 'K2AUTH/windFarm/VIEW/windFarmId'=0
+
+
+SELECT
+    id,
+    windFarmId,
+    windFarmName,
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%') AS edit,
+    (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%') AS delete,
     (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%') AS download
 FROM
     gw_basic_windfarm
 
-
-SELECT
-    id,
-    windFarmId,
-    windFarmName,
-    CONCAT(
-        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
-        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%'),
-        (SELECT count(1) from dual where windFarmId like '320%' or windFarmId like '122%')
-    ) AS operation
-FROM
-    gw_basic_windfarm
-    
+```
 -----
 
 - 多字段筛选
@@ -63,3 +63,4 @@ FROM
 - 所有权限时 处理
 
 - plugin 
+- 按钮点击权限验证

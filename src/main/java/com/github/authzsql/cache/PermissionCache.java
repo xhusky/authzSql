@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import com.github.authzsql.utils.SqlPermissionHelper;
 import com.github.authzsql.exception.CacheException;
 import com.github.authzsql.model.Permission;
 
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -22,22 +24,24 @@ import java.util.concurrent.ExecutionException;
 public class PermissionCache {
 
     // TODO 登录获取 登出清空
-    private static final String RESOURCE_TYPE_PREFIX = "md4x/";
+    private static final String USERNAME = "k2data";
     private static Map<String, Map<String, List<Permission>>> resourceMap;
-    private static LoadingCache<String, Map<String, Map<String, List<Permission>>>> cache = CacheBuilder.newBuilder()
-            .build(new CacheLoader<String, Map<String, Map<String, List<Permission>>>>() {
-                @Override
-                public Map<String, Map<String, List<Permission>>> load(String key) throws Exception {
-                    return handlePermission(key);
-                }
-            });
+    private static LoadingCache<String, Map<String, Map<String, List<Permission>>>> cache =
+            CacheBuilder.newBuilder()
+                    .maximumSize(1000)
+                    .build(new CacheLoader<String, Map<String, Map<String, List<Permission>>>>() {
+                        @Override
+                        public Map<String, Map<String, List<Permission>>> load(String key) throws Exception {
+                            return handlePermission(key);
+                        }
+                    });
 
     static {
         List<Permission> permissions = new ArrayList<>();
         Permission permission = new Permission();
         permission.setResourceType("md4x/windfarm");
         permission.setResourceInfo("LIKE:100040%");
-        permission.setOperation("VIEW");
+        permission.setOperation("EDIT");
         permissions.add(permission);
 
         Permission permission1 = new Permission();
@@ -54,7 +58,7 @@ public class PermissionCache {
 
         Permission permission21 = new Permission();
         permission21.setResourceType("md4x/windfarm");
-        permission21.setResourceInfo("LIKE:100070%");
+        permission21.setResourceInfo("IN:100070");
         permission21.setOperation("VIEW");
         permissions.add(permission21);
 
@@ -92,12 +96,24 @@ public class PermissionCache {
     }
 
     public static List<Permission> permissions(String resourceType, String operation) {
-        resourceType = RESOURCE_TYPE_PREFIX + resourceType;
-        if (resourceMap != null && resourceMap.get(resourceType) != null && resourceMap.get(resourceType).get(operation) != null) {
-            return resourceMap.get(resourceType).get(operation);
+        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
+        Map<String, Map<String, List<Permission>>> permissionMap = get(USERNAME);
+        if (permissionMap != null && permissionMap.get(resourceType) != null
+                && permissionMap.get(resourceType).get(operation) != null) {
+            return permissionMap.get(resourceType).get(operation);
         }
 
         return Collections.emptyList();
     }
 
+    public static Set<String> operations(String resourceType) {
+        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
+
+        Map<String, List<Permission>> operationPermissionMap = get(USERNAME).get(resourceType);
+        if(operationPermissionMap != null) {
+            return operationPermissionMap.keySet();
+        }
+
+        return Collections.emptySet();
+    }
 }

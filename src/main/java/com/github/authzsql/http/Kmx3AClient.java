@@ -1,4 +1,4 @@
-package com.github.authzsql;
+package com.github.authzsql.http;
 
 import java.io.IOException;
 import java.util.Map;

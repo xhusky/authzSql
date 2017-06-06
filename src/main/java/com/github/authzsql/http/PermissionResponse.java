@@ -1,4 +1,6 @@
-package com.github.authzsql.model;
+package com.github.authzsql.http;
+
+import com.github.authzsql.model.Permission;
 
 import java.util.List;
 

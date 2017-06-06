@@ -1,5 +1,7 @@
 package com.github.authzsql.model;
 
+import com.github.authzsql.model.converter.OperatorConverter;
+
 /**
  * Sql condition entity
  *
@@ -47,4 +49,9 @@ public class SqlCondition {
         this.column = newColumn;
         return string();
     }
+
+    public LogicalOperator getLogicalOperator() {
+        return OperatorConverter.ComparisonToLogical(operator);
+    }
+
 }

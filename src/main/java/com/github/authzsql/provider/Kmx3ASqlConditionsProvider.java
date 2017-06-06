@@ -1,4 +1,4 @@
-package com.github.authzsql;
+package com.github.authzsql.provider;
 
 import com.github.authzsql.cache.PermissionCache;
 import com.github.authzsql.model.ComparisonOperator;
@@ -20,17 +20,6 @@ public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider<SqlCond
 
     // eg, LIKE:3102%
     private static final Pattern PATTERN_OPERATOR_VALUE = Pattern.compile("(.*?):(.*)$");
-
-    /**
-     * Extract list of condition by resource type and operation type.
-     *
-     * @param resourceType resource type
-     * @param operation    operation type
-     */
-    @Override
-    public List<SqlCondition> conditions(String resourceType, String operation) {
-        return conditions(resourceType, operation, null);
-    }
 
     /**
      * Extract list of condition by resource type and operation type.
