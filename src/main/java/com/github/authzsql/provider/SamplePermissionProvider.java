@@ -5,7 +5,6 @@ import com.github.authzsql.utils.SqlPermissionHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,15 +50,7 @@ public class SamplePermissionProvider implements PermissionsProvider {
         permission22.setOperation("VIEW");
         permissions.add(permission22);
 
-        resourceMap = new HashMap<>();
-        for (Permission perm : permissions) {
-            String resourceType = perm.getResourceType();
-            String operation = perm.getOperation().toUpperCase();
-
-            resourceMap.putIfAbsent(resourceType, new HashMap<>());
-            resourceMap.get(resourceType).putIfAbsent(operation, new ArrayList<>());
-            resourceMap.get(resourceType).get(operation).add(perm);
-        }
+        resourceMap = SqlPermissionHelper.splitPermissions(permissions);
     }
 
 

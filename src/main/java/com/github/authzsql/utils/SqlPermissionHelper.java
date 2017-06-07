@@ -2,6 +2,7 @@ package com.github.authzsql.utils;
 
 import com.github.authzsql.model.Constants;
 import com.github.authzsql.model.LogicalOperator;
+import com.github.authzsql.model.Permission;
 import com.github.authzsql.model.SqlCondition;
 
 import java.util.ArrayList;
@@ -66,6 +67,21 @@ public class SqlPermissionHelper {
         }
 
         return builder.toString();
+    }
+
+    public static Map<String, Map<String, List<Permission>>> splitPermissions(List<Permission> permissions) {
+        Map<String, Map<String, List<Permission>>> splitMap = new HashMap<>();
+        for (Permission permission : permissions) {
+
+            String resourceType = permission.getResourceType();
+            String operation = permission.getOperation().toUpperCase();
+
+            splitMap.putIfAbsent(resourceType, new HashMap<>());
+            splitMap.get(resourceType).putIfAbsent(operation, new ArrayList<>());
+            splitMap.get(resourceType).get(operation).add(permission);
+        }
+
+        return splitMap;
     }
 
     public static String fillResourceType(String resourceType) {
