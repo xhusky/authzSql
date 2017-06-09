@@ -52,15 +52,17 @@ public class SqlPermissionHelper {
      */
     private static String generateConditionSqlClause(List<String> sqlConditions, String conjunction) {
 
-        conjunction = StringWrapper.whitespace(conjunction);
+        String wrappedConjunction = StringWrapper.whitespace(conjunction);
         StringBuilder builder = new StringBuilder();
         if (!sqlConditions.isEmpty()) {
             builder.append(Constants.SQL_CONDITION_OPEN);
-            for (int i = 0, n = sqlConditions.size(); i < n; i++) {
-                String sqlCondition = sqlConditions.get(i);
+
+            int i = 0;
+            for (String sqlCondition : sqlConditions) {
                 if (i > 0) {
-                    builder.append(conjunction);
+                    builder.append(wrappedConjunction);
                 }
+                i++;
                 builder.append(sqlCondition);
             }
             builder.append(Constants.SQL_CONDITION_CLOSE);

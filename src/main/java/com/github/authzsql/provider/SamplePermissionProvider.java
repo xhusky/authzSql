@@ -56,9 +56,9 @@ public class SamplePermissionProvider implements PermissionsProvider {
 
     @Override
     public Set<String> operations(String resourceType) {
-        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
+        String fullResourceType = SqlPermissionHelper.fillResourceType(resourceType);
 
-        Map<String, List<Permission>> operationPermissionMap = resourceMap.get(resourceType);
+        Map<String, List<Permission>> operationPermissionMap = resourceMap.get(fullResourceType);
         if (operationPermissionMap != null) {
             return operationPermissionMap.keySet();
         }
@@ -68,11 +68,11 @@ public class SamplePermissionProvider implements PermissionsProvider {
 
     @Override
     public List<Permission> permissions(String resourceType, String operation) {
-        resourceType = SqlPermissionHelper.fillResourceType(resourceType);
+        String fullResourceType = SqlPermissionHelper.fillResourceType(resourceType);
         Map<String, Map<String, List<Permission>>> permissionMap = resourceMap;
-        if (permissionMap != null && permissionMap.get(resourceType) != null
-                && permissionMap.get(resourceType).get(operation) != null) {
-            return permissionMap.get(resourceType).get(operation);
+        if (permissionMap != null && permissionMap.get(fullResourceType) != null
+                && permissionMap.get(fullResourceType).get(operation) != null) {
+            return permissionMap.get(fullResourceType).get(operation);
         }
 
         return Collections.emptyList();

@@ -54,7 +54,7 @@ public class SqlCondition {
      * Get logical operator by comparison operator.
      */
     public LogicalOperator getLogicalOperator() {
-        return OperatorConverter.ComparisonToLogical(operator);
+        return OperatorConverter.comparisonToLogical(operator);
     }
 
 }

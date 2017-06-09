@@ -9,7 +9,7 @@ import com.github.authzsql.model.LogicalOperator;
  * @author Think Wong
  */
 public class OperatorConverter {
-    public static LogicalOperator ComparisonToLogical(ComparisonOperator operator) {
+    public static LogicalOperator comparisonToLogical(ComparisonOperator operator) {
         switch (operator) {
             case IN:
             case LIKE:
