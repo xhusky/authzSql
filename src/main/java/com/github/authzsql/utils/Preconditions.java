@@ -1,7 +1,7 @@
 package com.github.authzsql.utils;
 
 /**
- * Utils for checking preconditions
+ * Utils for checking preconditions.
  *
  * @author Think Wong
  */

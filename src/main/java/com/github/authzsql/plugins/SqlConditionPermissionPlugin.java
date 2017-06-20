@@ -1,8 +1,8 @@
 package com.github.authzsql.plugins;
 
+import com.github.authzsql.model.SqlCondition;
 import com.github.authzsql.provider.SqlConditionsProvider;
 import com.github.authzsql.utils.SqlPermissionHelper;
-import com.github.authzsql.model.SqlCondition;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,13 +11,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Sql condition permission plugin
+ * Sql condition permission plugin.
  *
  * @author Think wong
  */
 public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
 
-    private static final Pattern PATTERN_CONDITION_PLACEHOLDER = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'\\s*=\\s*0");
+    private static final Pattern PATTERN_CONDITION_PLACEHOLDER = Pattern.compile(
+            "'K2AUTH/(.*?)/(.*?)/(.*?)'\\s*=\\s*0");
 
     private String originalSql;
     private SqlConditionsProvider sqlConditionsProvider;
@@ -38,7 +39,7 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Infill condition
+     * Infill condition.
      */
     private String infillConditionPlainSql(Map<String, String> conditionPlainSqlMap) {
 
@@ -51,7 +52,7 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Extract sql condition map. key is placeholder, value is where condition
+     * Extract sql condition map. key is placeholder, value is where condition.
      */
     private Map<String, String> extractConditionPlainSqlMap() {
         final Matcher matcher = PATTERN_CONDITION_PLACEHOLDER.matcher(originalSql);
@@ -66,7 +67,7 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Extract sql condition from placeholder
+     * Extract sql condition from placeholder.
      */
     private String extractConditionPlainSql(String placeholder) {
         final Matcher matcher = PATTERN_CONDITION_PLACEHOLDER.matcher(placeholder);
@@ -74,7 +75,8 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
             String resourceType = matcher.group(1);
             String operationType = matcher.group(2);
             String column = matcher.group(3);
-            List<SqlCondition> conditions = sqlConditionsProvider.conditions(resourceType, operationType, column);
+            List<SqlCondition> conditions = sqlConditionsProvider.conditions(
+                    resourceType, operationType, column);
 
             return SqlPermissionHelper.generateConditionSqlClause(conditions);
         }

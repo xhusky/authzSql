@@ -5,18 +5,20 @@ import com.github.authzsql.utils.StringWrapper;
 import java.util.Arrays;
 
 /**
- * Comparison operator
+ * Comparison operator.
  *
  * @author Think wong
  */
 public enum ComparisonOperator {
 
     EQUAL {
+        @Override
         public String condition(String column, String columnValue) {
             return column + " = " + StringWrapper.quote(columnValue);
         }
     },
     IN {
+        @Override
         public String condition(String column, String columnValue) {
             String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
@@ -26,16 +28,19 @@ public enum ComparisonOperator {
         }
     },
     LIKE {
+        @Override
         public String condition(String column, String columnValue) {
             return column + " LIKE " + StringWrapper.quote(columnValue);
         }
     },
     NOT_EQUAL {
+        @Override
         public String condition(String column, String columnValue) {
             return column + " <> " + StringWrapper.quote(columnValue);
         }
     },
     NOT_IN {
+        @Override
         public String condition(String column, String columnValue) {
             String[] values = columnValue.split(",");
             for (int i = 0; i < values.length; i++) {
@@ -45,11 +50,13 @@ public enum ComparisonOperator {
         }
     },
     NOT_LIKE {
+        @Override
         public String condition(String column, String columnValue) {
             return column + " NOT LIKE " + StringWrapper.quote(columnValue);
         }
     },
     ALL {
+        @Override
         public String condition(String column, String columnValue) {
             return Constants.SQL_CONDITION_TRUE;
         }

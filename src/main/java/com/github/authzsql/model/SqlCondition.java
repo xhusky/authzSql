@@ -3,7 +3,7 @@ package com.github.authzsql.model;
 import com.github.authzsql.model.converter.OperatorConverter;
 
 /**
- * Sql condition entity
+ * Sql condition entity.
  *
  * @author Think wong
  */

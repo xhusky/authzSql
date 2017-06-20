@@ -1,6 +1,5 @@
 package com.github.authzsql.provider;
 
-
 import com.github.authzsql.model.ComparisonOperator;
 import com.github.authzsql.model.Constants;
 import com.github.authzsql.model.Permission;
@@ -14,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Kmx conditions provider
+ * Kmx conditions provider.
  *
  * @author Think wong
  */

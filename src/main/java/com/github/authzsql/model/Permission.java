@@ -54,12 +54,12 @@ public class Permission {
 
     @Override
     public String toString() {
-        return "Permission{" +
-                "id='" + id + '\'' +
-                ", resourceType='" + resourceType + '\'' +
-                ", resourceInfo='" + resourceInfo + '\'' +
-                ", operation='" + operation + '\'' +
-                ", effect='" + effect + '\'' +
-                '}';
+        return "Permission{"
+                + "id='" + id + '\''
+                + ", resourceType='" + resourceType + '\''
+                + ", resourceInfo='" + resourceInfo + '\''
+                + ", operation='" + operation + '\''
+                + ", effect='" + effect + '\''
+                + '}';
     }
 }

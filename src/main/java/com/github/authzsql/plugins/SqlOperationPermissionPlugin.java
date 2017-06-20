@@ -21,7 +21,8 @@ import java.util.regex.Pattern;
  */
 public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
 
-    private static final Pattern PATTERN_OPERATION_PLACEHOLDER = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'");
+    private static final Pattern PATTERN_OPERATION_PLACEHOLDER
+            = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'");
 
     private String originalSql;
     private SqlConditionsProvider sqlConditionsProvider;
@@ -83,7 +84,8 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
         return placeholder;
     }
 
-    private String extractConditionPlainSql(String resourceType, String operationType, String column) {
+    private String extractConditionPlainSql(
+            String resourceType, String operationType, String column) {
         StringBuilder sqlClause = new StringBuilder();
         Set<String> operationSet = new HashSet<>();
 
@@ -96,7 +98,8 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
         int i = 0;
         for (String operation : operationSet) {
 
-            List<SqlCondition> sqlConditions = sqlConditionsProvider.conditions(resourceType, operation, column);
+            List<SqlCondition> sqlConditions = sqlConditionsProvider.conditions(
+                    resourceType, operation, column);
             if (i > 0) {
                 sqlClause.append(",");
                 sqlClause.append("\n");
@@ -109,7 +112,8 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
             sqlClause.append(Constants.SQL_CONDITION_CLOSE);
 
             String columnAlias = resourceType + "_" + operation;
-            columnAlias = Constants.SQL_COLUMN_AS + StringWrapper.backQuote(columnAlias.toLowerCase());
+            columnAlias = Constants.SQL_COLUMN_AS
+                    + StringWrapper.backQuote(columnAlias.toLowerCase());
             sqlClause.append(columnAlias);
         }
 
