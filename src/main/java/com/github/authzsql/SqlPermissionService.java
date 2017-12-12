@@ -3,7 +3,7 @@ package com.github.authzsql;
 import com.github.authzsql.plugins.SqlConditionPermissionPlugin;
 import com.github.authzsql.plugins.SqlOperationPermissionPlugin;
 import com.github.authzsql.plugins.SqlPermissionPlugin;
-import com.github.authzsql.provider.Kmx3ASqlConditionsProvider;
+import com.github.authzsql.provider.KmxAuthSqlConditionsProvider;
 import com.github.authzsql.provider.PermissionsProvider;
 import com.github.authzsql.provider.SqlConditionsProvider;
 import com.github.authzsql.utils.Preconditions;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * This guy is lazy, nothing left.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class SqlPermissionService {
 
@@ -28,6 +28,7 @@ public class SqlPermissionService {
     }
 
     public static class Builder {
+
         private SqlPermissionService service = new SqlPermissionService();
 
         public Builder sql(String sql) {
@@ -37,7 +38,8 @@ public class SqlPermissionService {
         }
 
         public Builder sqlConditionsProvider(SqlConditionsProvider sqlConditionsProvider) {
-            Preconditions.checkNotNull(sqlConditionsProvider, "sqlConditionsProvider can't be null");
+            Preconditions
+                .checkNotNull(sqlConditionsProvider, "sqlConditionsProvider can't be null");
             service.sqlConditionsProvider = sqlConditionsProvider;
             return this;
         }
@@ -55,19 +57,23 @@ public class SqlPermissionService {
         }
 
         private void initConfig() {
-            if(service.sqlConditionsProvider == null) {
-                service.sqlConditionsProvider = new Kmx3ASqlConditionsProvider(service.permissionsProvider);
+            if (service.sqlConditionsProvider == null) {
+                service.sqlConditionsProvider = new KmxAuthSqlConditionsProvider(
+                    service.permissionsProvider);
             }
             if (service.sqlPermissionPlugins == null || service.sqlPermissionPlugins.isEmpty()) {
                 service.sqlPermissionPlugins = new ArrayList<>();
-                service.sqlPermissionPlugins.add(new SqlConditionPermissionPlugin(service.sqlConditionsProvider));
-                service.sqlPermissionPlugins.add(new SqlOperationPermissionPlugin(service.sqlConditionsProvider));
+                service.sqlPermissionPlugins
+                    .add(new SqlConditionPermissionPlugin(service.sqlConditionsProvider));
+                service.sqlPermissionPlugins
+                    .add(new SqlOperationPermissionPlugin(service.sqlConditionsProvider));
             }
         }
 
         private void checkPreconditions() {
             Preconditions.checkEmptyString(service.originalSql, "You must provide an original sql");
-            Preconditions.checkNotNull(service.permissionsProvider, "You must provide a permissionsProvider");
+            Preconditions.checkNotNull(service.permissionsProvider,
+                "You must provide a permissionsProvider");
         }
 
         public SqlPermissionService build() {

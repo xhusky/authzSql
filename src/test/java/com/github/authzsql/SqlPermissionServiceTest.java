@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * SqlPermissionService Tester.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class SqlPermissionServiceTest {
 
@@ -67,28 +67,28 @@ public class SqlPermissionServiceTest {
     public void testTransformSql() throws Exception {
         PermissionsProvider permissionsProvider = new SamplePermissionProvider();
         String sql = new SqlPermissionService.Builder()
-                .sql(ORIGINAL_SQL)
-                .permissionsProvider(permissionsProvider)
-                .build()
-                .transformSql();
+            .sql(ORIGINAL_SQL)
+            .permissionsProvider(permissionsProvider)
+            .build()
+            .transformSql();
         System.out.println(sql);
 
         System.out.println("-------------------------------------------------------------------");
 
         String sql2 = new SqlPermissionService.Builder()
-                .sql(ORIGINAL_SQL2)
-                .permissionsProvider(permissionsProvider)
-                .build()
-                .transformSql();
+            .sql(ORIGINAL_SQL2)
+            .permissionsProvider(permissionsProvider)
+            .build()
+            .transformSql();
         System.out.println(sql2);
 
         System.out.println("-------------------------------------------------------------------");
 
         String sql3 = new SqlPermissionService.Builder()
-                .sql(ORIGINAL_SQL3)
-                .permissionsProvider(permissionsProvider)
-                .build()
-                .transformSql();
+            .sql(ORIGINAL_SQL3)
+            .permissionsProvider(permissionsProvider)
+            .build()
+            .transformSql();
         System.out.println(sql3);
 
         Assert.assertEquals(sql3, SQL3);

@@ -5,9 +5,10 @@ import com.github.authzsql.model.converter.OperatorConverter;
 /**
  * Sql condition entity.
  *
- * @author Think wong
+ * @author wsg
  */
 public class SqlCondition {
+
     private String column;
     private ComparisonOperator operator;
     private String value;

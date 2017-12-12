@@ -6,9 +6,16 @@ import com.github.authzsql.model.LogicalOperator;
 /**
  * Operator converter.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class OperatorConverter {
+
+    /**
+     * Comparison operator to logical operator.
+     *
+     * @param operator Comparison operator
+     * @return Logical operator
+     */
     public static LogicalOperator comparisonToLogical(ComparisonOperator operator) {
         switch (operator) {
             case IN:

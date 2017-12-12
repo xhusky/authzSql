@@ -13,12 +13,12 @@ import java.util.regex.Pattern;
 /**
  * Sql condition permission plugin.
  *
- * @author Think wong
+ * @author wsg
  */
 public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
 
     private static final Pattern PATTERN_CONDITION_PLACEHOLDER = Pattern.compile(
-            "'K2AUTH/(.*?)/(.*?)/(.*?)'\\s*=\\s*0");
+        "'K2AUTH/(.*?)/(.*?)/(.*?)'\\s*=\\s*0");
 
     private String originalSql;
     private SqlConditionsProvider sqlConditionsProvider;
@@ -76,7 +76,7 @@ public class SqlConditionPermissionPlugin implements SqlPermissionPlugin {
             String operationType = matcher.group(2);
             String column = matcher.group(3);
             List<SqlCondition> conditions = sqlConditionsProvider.conditions(
-                    resourceType, operationType, column);
+                resourceType, operationType, column);
 
             return SqlPermissionHelper.generateConditionSqlClause(conditions);
         }

@@ -17,12 +17,12 @@ import java.util.regex.Pattern;
 /**
  * Sql operation permission plugin.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
 
     private static final Pattern PATTERN_OPERATION_PLACEHOLDER
-            = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'");
+        = Pattern.compile("'K2AUTH/(.*?)/(.*?)/(.*?)'");
 
     private String originalSql;
     private SqlConditionsProvider sqlConditionsProvider;
@@ -43,7 +43,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Extract sql condition map. key is placeholder, value is where condition
+     * Extract sql condition map. key is placeholder, value is where condition.
      */
     private Map<String, String> extractConditionPlainSqlMap() {
         final Matcher matcher = PATTERN_OPERATION_PLACEHOLDER.matcher(originalSql);
@@ -58,7 +58,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Infill condition
+     * Infill condition.
      */
     private String infillConditionPlainSql(Map<String, String> conditionPlainSqlMap) {
 
@@ -71,7 +71,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
     }
 
     /**
-     * Extract sql condition from placeholder
+     * Extract sql condition from placeholder.
      */
     private String extractConditionPlainSql(String placeholder) {
         final Matcher matcher = PATTERN_OPERATION_PLACEHOLDER.matcher(placeholder);
@@ -85,11 +85,11 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
     }
 
     private String extractConditionPlainSql(
-            String resourceType, String operationType, String column) {
+        String resourceType, String operationType, String column) {
         StringBuilder sqlClause = new StringBuilder();
         Set<String> operationSet = new HashSet<>();
 
-        if ("ALL".equals(operationType)) {
+        if (Constants.OPERATION_ALL.equals(operationType)) {
             operationSet = sqlConditionsProvider.operations(resourceType);
         } else {
             operationSet.clear();
@@ -99,7 +99,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
         for (String operation : operationSet) {
 
             List<SqlCondition> sqlConditions = sqlConditionsProvider.conditions(
-                    resourceType, operation, column);
+                resourceType, operation, column);
             if (i > 0) {
                 sqlClause.append(",");
                 sqlClause.append("\n");
@@ -113,7 +113,7 @@ public class SqlOperationPermissionPlugin implements SqlPermissionPlugin {
 
             String columnAlias = resourceType + "_" + operation;
             columnAlias = Constants.SQL_COLUMN_AS
-                    + StringWrapper.backQuote(columnAlias.toLowerCase());
+                + StringWrapper.backQuote(columnAlias.toLowerCase());
             sqlClause.append(columnAlias);
         }
 

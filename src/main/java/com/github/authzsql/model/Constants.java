@@ -1,11 +1,12 @@
 package com.github.authzsql.model;
 
 /**
- * This guy is lazy, nothing left.
+ * Constants.
  *
- * @author Think Wong
+ * @author wsg
  */
 public interface Constants {
+
     String SQL_CONDITION_TRUE = "1 = 1";
     String SQL_CONDITION_FALSE = "1 = 0";
     String SQL_CONDITION_OPEN = "(";
@@ -16,8 +17,11 @@ public interface Constants {
     String SQL_COLUMN_AS = " AS ";
 
     String PERMISSION_ALL_VALUE = "*";
-    String PERMISSION_SYSTEM_PREFIX = "md4x/";
+    String SYSTEM_NAME = "md4x";
+    String SYSTEM_SEPARATOR = "::";
+    String PERMISSION_SYSTEM_PREFIX = SYSTEM_NAME + SYSTEM_SEPARATOR;
 
+    String OPERATION_ALL = "ALL";
 }
 
 

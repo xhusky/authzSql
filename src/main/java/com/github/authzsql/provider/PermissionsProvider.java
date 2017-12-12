@@ -6,23 +6,26 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This guy is lazy, nothing left.
+ * Permissions provider interface.
  *
- * @author Think Wong
+ * @author wsg
  */
 public interface PermissionsProvider {
+
     /**
-     * Get operations
+     * Get operations.
      *
      * @param resourceType resource type
+     * @return operations
      */
     Set<String> operations(String resourceType);
 
     /**
-     * Get permissions
+     * Get permissions.
      *
      * @param resourceType resource type
-     * @param operation    operation type
+     * @param operation operation type
+     * @return permissions
      */
     List<Permission> permissions(String resourceType, String operation);
 }

@@ -13,12 +13,12 @@ import java.util.Map;
 /**
  * This guy is lazy, nothing left.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class SqlPermissionHelper {
 
     /**
-     * Generate condition sql clause
+     * Generate condition sql clause.
      */
     public static String generateConditionSqlClause(List<SqlCondition> sqlConditions) {
 
@@ -48,9 +48,10 @@ public class SqlPermissionHelper {
     }
 
     /**
-     * Generate condition sql clause
+     * Generate condition sql clause.
      */
-    private static String generateConditionSqlClause(List<String> sqlConditions, String conjunction) {
+    private static String generateConditionSqlClause(List<String> sqlConditions,
+        String conjunction) {
 
         String wrappedConjunction = StringWrapper.whitespace(conjunction);
         StringBuilder builder = new StringBuilder();
@@ -71,7 +72,8 @@ public class SqlPermissionHelper {
         return builder.toString();
     }
 
-    public static Map<String, Map<String, List<Permission>>> splitPermissions(List<Permission> permissions) {
+    public static Map<String, Map<String, List<Permission>>> splitPermissions(
+        List<Permission> permissions) {
         Map<String, Map<String, List<Permission>>> splitMap = new HashMap<>();
         for (Permission permission : permissions) {
 

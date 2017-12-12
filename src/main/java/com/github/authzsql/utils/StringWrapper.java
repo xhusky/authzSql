@@ -1,11 +1,12 @@
 package com.github.authzsql.utils;
 
 /**
- * This guy is lazy, nothing left.
+ * String wrapper.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class StringWrapper {
+
     public static String quote(String str) {
         return wrap(str, '\'');
     }
@@ -17,7 +18,6 @@ public class StringWrapper {
     public static String backQuote(String str) {
         return wrap(str, '`');
     }
-
 
     public static String whitespace(String str) {
         return wrap(str, ' ');

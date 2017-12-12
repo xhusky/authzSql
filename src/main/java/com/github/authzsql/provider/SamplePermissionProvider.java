@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This guy is lazy, nothing left.
+ * Permission provider example.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class SamplePermissionProvider implements PermissionsProvider {
 
@@ -53,7 +53,6 @@ public class SamplePermissionProvider implements PermissionsProvider {
         resourceMap = SqlPermissionHelper.splitPermissions(permissions);
     }
 
-
     @Override
     public Set<String> operations(String resourceType) {
         String fullResourceType = SqlPermissionHelper.fillResourceType(resourceType);
@@ -71,7 +70,7 @@ public class SamplePermissionProvider implements PermissionsProvider {
         String fullResourceType = SqlPermissionHelper.fillResourceType(resourceType);
         Map<String, Map<String, List<Permission>>> permissionMap = resourceMap;
         if (permissionMap != null && permissionMap.get(fullResourceType) != null
-                && permissionMap.get(fullResourceType).get(operation) != null) {
+            && permissionMap.get(fullResourceType).get(operation) != null) {
             return permissionMap.get(fullResourceType).get(operation);
         }
 

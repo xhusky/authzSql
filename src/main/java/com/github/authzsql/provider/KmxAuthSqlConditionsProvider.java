@@ -13,17 +13,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Kmx conditions provider.
+ * Kmx auth conditions provider.
  *
- * @author Think wong
+ * @author wsg
  */
-public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider {
+public class KmxAuthSqlConditionsProvider implements SqlConditionsProvider {
 
-    // eg, LIKE:3102%
+    /**
+     * eg, LIKE:3102%, IN:1001,1002,1003.
+     */
     private static final Pattern PATTERN_OPERATOR_VALUE = Pattern.compile("(.*?):(.*)$");
+
     private PermissionsProvider permissionsProvider;
 
-    public Kmx3ASqlConditionsProvider(PermissionsProvider permissionsProvider) {
+    public KmxAuthSqlConditionsProvider(PermissionsProvider permissionsProvider) {
         Preconditions.checkNotNull(permissionsProvider, "permissionsProvider can't be null");
         this.permissionsProvider = permissionsProvider;
     }
@@ -48,7 +51,7 @@ public class Kmx3ASqlConditionsProvider implements SqlConditionsProvider {
      * Extract condition.
      *
      * @param resourceInfo resource info
-     * @param column       column name
+     * @param column column name
      */
     private SqlCondition extractCondition(String resourceInfo, String column) {
         final Matcher matcher = PATTERN_OPERATOR_VALUE.matcher(resourceInfo);

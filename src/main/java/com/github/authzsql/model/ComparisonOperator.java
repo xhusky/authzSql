@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Comparison operator.
  *
- * @author Think wong
+ * @author wsg
  */
 public enum ComparisonOperator {
 

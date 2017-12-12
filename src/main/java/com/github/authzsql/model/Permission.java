@@ -1,11 +1,12 @@
 package com.github.authzsql.model;
 
 /**
- * This guy is lazy, nothing left.
+ * Permission entity.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class Permission {
+
     private String id;
     private String resourceType;
     private String resourceInfo;
@@ -55,11 +56,11 @@ public class Permission {
     @Override
     public String toString() {
         return "Permission{"
-                + "id='" + id + '\''
-                + ", resourceType='" + resourceType + '\''
-                + ", resourceInfo='" + resourceInfo + '\''
-                + ", operation='" + operation + '\''
-                + ", effect='" + effect + '\''
-                + '}';
+            + "id='" + id + '\''
+            + ", resourceType='" + resourceType + '\''
+            + ", resourceInfo='" + resourceInfo + '\''
+            + ", operation='" + operation + '\''
+            + ", effect='" + effect + '\''
+            + '}';
     }
 }

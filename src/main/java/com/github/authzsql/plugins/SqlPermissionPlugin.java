@@ -1,14 +1,14 @@
 package com.github.authzsql.plugins;
 
 /**
- * This guy is lazy, nothing left.
+ * Sql permission plugin interface.
  *
- * @author Think Wong
+ * @author wsg
  */
 public interface SqlPermissionPlugin {
 
     /**
-     * transform sql
+     * transform sql.
      *
      * @param originalSql original sql
      * @return transformed sql
@@ -16,6 +16,8 @@ public interface SqlPermissionPlugin {
     String transformSql(String originalSql);
 
     /**
+     * support transform or not.
+     *
      * @param originalSql original sql
      * @return true if support to transform
      */

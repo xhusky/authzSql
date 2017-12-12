@@ -3,7 +3,7 @@ package com.github.authzsql.utils;
 /**
  * Utils for checking preconditions.
  *
- * @author Think Wong
+ * @author wsg
  */
 public class Preconditions {
 
@@ -14,7 +14,6 @@ public class Preconditions {
      *
      * @param object any object
      * @param errorMsg error message
-     *
      * @throws IllegalArgumentException if the object is null
      */
     public static void checkNotNull(Object object, String errorMsg) {
@@ -22,11 +21,10 @@ public class Preconditions {
     }
 
     /**
-     * Checks that a string is not null or empty
+     * Checks that a string is not null or empty.
      *
      * @param string any string
      * @param errorMsg error message
-     *
      * @throws IllegalArgumentException if the string is null or empty
      */
     public static void checkEmptyString(String string, String errorMsg) {
